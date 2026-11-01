@@ -245,7 +245,6 @@ const easyReplacements = [
   ["utilizing", "using"],
   ["utilize", "use"],
   ["in order to", "to"],
-  ["a significant", "a large"],
   ["demonstrate", "show"],
   ["Furthermore", "Also"],
   ["Additionally", "Also"],

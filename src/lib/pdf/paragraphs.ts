@@ -59,7 +59,7 @@ export function extractParagraphs(
         current.x < previous.x - 120);
     if (
       previous &&
-      (gap > Math.max(previous.height, current.height) * 1.65 ||
+      (gap > Math.max(previous.height, current.height) * 1.5 ||
         heading ||
         columnChange ||
         previous.height > current.height * 1.25)
@@ -138,10 +138,25 @@ export function inferMetadata(
 export function paragraphForQuote(
   paragraphs: Paragraph[],
   quote: string,
-): string {
+  precedingText?: string,
+): string | null {
   const normalize = (text: string) => text.toLowerCase().replace(/[-\s]+/g, "");
+  if (precedingText !== undefined) {
+    const start = normalize(precedingText).length;
+    let offset = 0;
+    for (const paragraph of paragraphs) {
+      const text = normalize(paragraph.text);
+      if (start >= offset && start < offset + text.length) {
+        return text.slice(start - offset).startsWith(normalize(quote))
+          ? paragraph.text
+          : null;
+      }
+      offset += text.length;
+    }
+    return null;
+  }
   return (
     paragraphs.find((item) => normalize(item.text).includes(normalize(quote)))
-      ?.text ?? quote
+      ?.text ?? null
   );
 }

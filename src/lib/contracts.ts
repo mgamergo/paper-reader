@@ -72,6 +72,18 @@ export const assistanceResultSchema = generatedAssistanceSchema.extend({
   source: z.enum(["mock", "live"]),
   note: z.string().max(1000),
 });
+export function generatedAssistanceFor(language: Language) {
+  return generatedAssistanceSchema.refine(
+    (result) =>
+      language === "en"
+        ? result.native === null
+        : result.native?.language === language,
+    {
+      message:
+        "The response must include the requested native language, or no translation for English.",
+    },
+  );
+}
 export type AssistanceResult = z.infer<typeof assistanceResultSchema>;
 export type AsyncState<T> =
   | { kind: "idle" }

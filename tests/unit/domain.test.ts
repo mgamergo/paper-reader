@@ -8,6 +8,7 @@ import {
 import {
   assistanceRequestSchema,
   assistanceResultSchema,
+  generatedAssistanceFor,
   languages,
   type AssistanceRequest,
 } from "../../src/lib/contracts";
@@ -97,6 +98,32 @@ describe("arXiv boundary", () => {
   });
 });
 describe("assistance", () => {
+  test("native output must match the requested language", () => {
+    const result = demoAssistance(request);
+    expect(generatedAssistanceFor("hi").safeParse(result).success).toBe(true);
+    expect(generatedAssistanceFor("ta").safeParse(result).success).toBe(false);
+    expect(
+      generatedAssistanceFor("hi").safeParse({ ...result, native: null })
+        .success,
+    ).toBe(false);
+    expect(
+      generatedAssistanceFor("en").safeParse({ ...result, native: null })
+        .success,
+    ).toBe(true);
+    expect(generatedAssistanceFor("en").safeParse(result).success).toBe(false);
+  });
+  test("demo simplification preserves statistical significance", () => {
+    const paragraph =
+      "We demonstrate a significant difference (p < 0.05), despite a small effect size.";
+    const result = demoAssistance({
+      ...request,
+      kind: "simplify",
+      selection: { ...request.selection, paragraph },
+    });
+    expect(result.english).toBe(
+      "We show a significant difference (p < 0.05), despite a small effect size.",
+    );
+  });
   test("requests are validated", () => {
     expect(assistanceRequestSchema.safeParse(request).success).toBe(true);
     expect(
@@ -171,6 +198,89 @@ describe("assistance", () => {
     });
     expect(changed.english).toContain("42 samples");
     expect(changed.english).not.toContain("Transformer");
+  });
+});
+
+describe("PDF selection occurrence", () => {
+  test("recognizes the paragraph spacing in the real Attention paper", () => {
+    const paragraphs = extractParagraphs(
+      [
+        {
+          str: "Recurrent models carry state.",
+          x: 108,
+          y: 647.147,
+          width: 300,
+          height: 9.9626,
+          hasEOL: true,
+        },
+        {
+          str: "This prevents parallel training.",
+          x: 108,
+          y: 636.238,
+          width: 300,
+          height: 9.9626,
+          hasEOL: true,
+        },
+        {
+          str: "Attention compares positions directly.",
+          x: 108,
+          y: 619.849,
+          width: 300,
+          height: 9.9626,
+          hasEOL: true,
+        },
+      ],
+      2,
+    );
+    expect(paragraphs.map((paragraph) => paragraph.text)).toEqual([
+      "Recurrent models carry state. This prevents parallel training.",
+      "Attention compares positions directly.",
+    ]);
+  });
+  const paragraphs = [
+    { id: "1-0", page: 1, text: "Attention Is All You Need", heading: true },
+    {
+      id: "1-1",
+      page: 1,
+      text: "We use attention to compare tokens.",
+      heading: false,
+    },
+    {
+      id: "1-2",
+      page: 1,
+      text: "Masked attention hides future tokens.",
+      heading: false,
+    },
+  ];
+  test("uses text-layer position for a word repeated in a title and body", () => {
+    expect(
+      paragraphForQuote(
+        paragraphs,
+        "attention",
+        "Attention Is All You NeedWe use ",
+      ),
+    ).toBe("We use attention to compare tokens.");
+    expect(
+      paragraphForQuote(
+        paragraphs,
+        "attention",
+        "Attention Is All You NeedWe use attention to compare tokens.Masked ",
+      ),
+    ).toBe("Masked attention hides future tokens.");
+  });
+  test("does not silently use a different occurrence when mapping fails", () => {
+    expect(
+      paragraphForQuote(paragraphs, "attention", "mismatched PDF prefix"),
+    ).toBeNull();
+  });
+  test("preserves an exact whole-paragraph match", () => {
+    expect(
+      paragraphForQuote(
+        paragraphs,
+        "We use attention to compare tokens.",
+        "Attention Is All You Need",
+      ),
+    ).toBe("We use attention to compare tokens.");
   });
 });
 describe("glossary persistence", () => {

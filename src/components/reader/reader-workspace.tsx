@@ -67,13 +67,24 @@ export function ReaderWorkspace({
       return;
     const quote = selection.toString().trim();
     if (!quote || quote.length > 1000) return;
+    const selectedRange = selection.getRangeAt(0);
     const target =
-      selection.anchorNode?.parentElement?.closest<HTMLElement>(
+      selectedRange.startContainer.parentElement?.closest<HTMLElement>(
         "[data-paragraph]",
       );
+    const textLayer =
+      selectedRange.startContainer.parentElement?.closest(".textLayer");
+    let precedingText: string | undefined;
+    if (textLayer?.contains(selectedRange.endContainer)) {
+      const prefix = window.document.createRange();
+      prefix.selectNodeContents(textLayer);
+      prefix.setEnd(selectedRange.startContainer, selectedRange.startOffset);
+      precedingText = prefix.toString();
+    }
     const paragraph =
-      target?.dataset.paragraph ?? paragraphForQuote(paragraphs, quote);
-    const rect = selection.getRangeAt(0).getBoundingClientRect();
+      target?.dataset.paragraph ??
+      paragraphForQuote(paragraphs, quote, precedingText);
+    const rect = selectedRange.getBoundingClientRect();
     const bounds = root.getBoundingClientRect();
     setAnchor({
       top:
@@ -83,9 +94,11 @@ export function ReaderWorkspace({
     });
     reader.chooseSelection({
       quote,
-      paragraph: (paragraph === quote && view === "pdf"
-        ? paragraphs.map((item) => item.text).join("\n\n") || quote
-        : paragraph
+      paragraph: (
+        paragraph ??
+        (view === "pdf"
+          ? paragraphs.map((item) => item.text).join("\n\n") || quote
+          : quote)
       ).slice(0, 12000),
       page: reader.page,
     });
