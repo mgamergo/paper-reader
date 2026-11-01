@@ -17,6 +17,7 @@ import {
 import { languageSchema, languages, type Paragraph } from "@/lib/contracts";
 import { paragraphForQuote } from "@/lib/pdf/paragraphs";
 import { Button } from "@/components/ui/button";
+import { ThemeToggle } from "@/components/theme-toggle";
 import { OpenPaperDialog } from "./open-paper-dialog";
 import { MetadataDialog } from "./metadata-dialog";
 import { SelectionHelp } from "./selection-help";
@@ -169,6 +170,7 @@ export function ReaderWorkspace({
               ))}
             </select>
           </label>
+          <ThemeToggle />
           <OpenPaperDialog reader={reader} />
           <Button
             className="glossary-toggle"
@@ -441,6 +443,12 @@ export function ReaderWorkspace({
                     Select a word or phrase for help, or use a paragraph&apos;s
                     actions.
                   </p>
+                  {view === "pdf" && (
+                    <p className="pdf-color-note">
+                      Original PDF colors are preserved. Text view uses your
+                      reading theme.
+                    </p>
+                  )}
                 </div>
                 {view === "pdf" ? (
                   <PdfPage pdf={document.pdf} page={reader.page} />
