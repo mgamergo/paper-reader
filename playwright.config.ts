@@ -6,7 +6,11 @@ export default defineConfig({
   workers: 1,
   timeout: 60000,
   expect: { timeout: 15000 },
-  reporter: [["list"], ["html", { open: "never" }]],
+  reporter: [
+    ["list"],
+    ["html", { open: "never" }],
+    ["json", { outputFile: "artifacts/e2e-results.json" }],
+  ],
   use: {
     ...devices["Desktop Chrome"],
     baseURL: "http://127.0.0.1:3000",
@@ -16,9 +20,9 @@ export default defineConfig({
     screenshot: "only-on-failure",
   },
   webServer: {
-    command: "bun run dev --hostname 127.0.0.1",
+    command: "bun run start --hostname 127.0.0.1",
     url: "http://127.0.0.1:3000",
-    reuseExistingServer: !process.env.CI,
+    reuseExistingServer: false,
     timeout: 120000,
   },
 });

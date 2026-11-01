@@ -2,6 +2,8 @@
 
 Margin is a quiet research desk for readers learning through another language. Open a real PDF, select a technical word, and read its meaning in English beside Hindi, Telugu, Marathi, or Tamil. A saved glossary helps you return to what you learned.
 
+![Margin showing a contextual explanation in English and Hindi beside the real Attention Is All You Need paper.](docs/screenshots/margin.png)
+
 ## Run locally
 
 Use Bun 1.4.4 and Node 24.22.1 or another runtime supported by Next.js 16.4.3 and PDF.js 6. React 19.3, TypeScript, Tailwind 4, and Radix-based shadcn/ui components are included. Noto fonts for the native scripts are bundled locally through Fontsource. No remote fonts are needed.
@@ -27,7 +29,7 @@ bun run start --hostname 127.0.0.1
 3. Choose **Text** for comfortable PDF-extracted paragraphs or **PDF** for the original page and selectable PDF.js text layer. Navigate pages with the toolbar or sidebar.
 4. Select a word or phrase with the mouse or keyboard. Choose **Explain selection** in the floating panel. **Inspect or correct context** lets you edit the selected term and surrounding paragraph.
 5. Choose a native language in the header. English shows the English explanation alone. Re-run the action after changing the language.
-6. Use **Simplify paragraph** and its reading-level slider. Original and simplified paragraphs appear together. Underlined technical terms open keyboard-accessible definitions. Paragraph action buttons also work without selecting text.
+6. Use **Simplify paragraph**. Expand **Simplification level** to adjust the reading-level slider, then re-run the action. Expand **Original paragraph** to compare it with the rewrite. Underlined technical terms open keyboard-accessible definitions. Paragraph action buttons also work without selecting text.
 7. Looked-up terms enter **My glossary** automatically, with their context sentence, paper, page, language, and demo or live source. Expand a term to inspect its context, remove it, or choose **Review flashcards** to reveal and advance through meanings.
 
 Metadata comes from the PDF title and first-page extracted abstract. Use **Edit metadata** to correct it, especially for local uploads. Metadata is sent with the selected term and paragraph for assistance. The library and page outline describe the current in-memory document. This prototype does not store a PDF library across reloads.
@@ -73,13 +75,16 @@ bun run build
 
 `bun run format` formats source. The Bun unit tests cover arXiv acceptance and rejection, bounded streamed PDF reads, PDF signatures, assistance schemas and curated multilingual responses, context-dependent simplification, honest fallbacks, paragraph extraction, metadata inference, and versioned glossary deduplication and persistence validation.
 
-Playwright 1.64.1 is pinned for independent browser tests. `playwright.config.ts` starts a loopback development server, uses one worker, preserves traces on failure, and launches `/usr/bin/chromium` with `INSTABOX_HEADLESS=1`. It does not download browsers. The parent verification owner supplies final E2E tests under `tests/e2e` and runs:
+Playwright 1.64.1 is pinned for repeatable browser tests. Build first. `playwright.config.ts` starts and stops its own loopback production server, uses one worker, preserves traces on failure, and launches `/usr/bin/chromium` with `INSTABOX_HEADLESS=1`. It does not download browsers or reuse an unrelated service on port 3000.
 
 ```sh
+bun run build
 bun run test:e2e
 ```
 
-Attach console-error, page-error, request-failure, and HTTP 4xx/5xx diagnostics before navigation. Check 1440×900, 768×1024, and 390×844 sequentially, inspect screenshots, assert flow state, and close test-owned contexts and servers. Chromium viewport checks do not establish Safari, Firefox, or real-device support.
+The four E2E tests import the real arXiv paper, select words with the mouse in text and PDF views, assert the request includes surrounding text and metadata, exercise every native language, change simplification levels and open definitions, verify glossary persistence and flashcards, recover damaged storage, and reject invalid API requests. A delayed-response test proves that changing language cancels obsolete help without saving it.
+
+Diagnostics attach before navigation and record console errors, uncaught page errors, failed requests, and HTTP 4xx/5xx responses. The cancellation test explicitly expects one aborted assistance request; it records that cancellation separately. All other browser error categories must remain empty. Screenshots go to `artifacts/`; traces and the HTML report go to `test-results/` and `playwright-report/`. Viewport checks cover 1440×900, 768×1024, and 390×844. Chromium viewport checks do not establish Safari, Firefox, or real-device support. Successful live-provider generation requires your credentials and is not covered by the demo suite.
 
 Useful locators for verification:
 
@@ -96,3 +101,11 @@ Useful locators for verification:
 - On tablet and mobile, choose **Show glossary** to open the dismissible glossary panel. Choose **Pages** for the dismissible page navigation.
 
 See [ARCHITECTURE.md](ARCHITECTURE.md) for module ownership. [AI SDK structured output](https://ai-sdk.dev/docs/reference/ai-sdk-core/output) and [PDF.js examples](https://mozilla.github.io/pdf.js/examples/) describe the upstream APIs. App code is MIT licensed. Dependencies and papers retain their own licenses and attribution.
+
+## Prototype verification
+
+The November 1, 2026 verification passed formatting, lint, type checking, 53 Bun unit tests, a production build, and all four Chromium E2E tests. The suite used the real 15-page arXiv PDF for import and upload. Desktop, tablet, and mobile screenshots were captured and inspected. Test-owned browsers and servers were stopped.
+
+Review and browser testing found and fixed occurrence matching that could attach a PDF word to its title instead of its paragraph, paragraph spacing that merged separate passages, an unsafe statistical wording substitution, missing validation of the requested output language, and sidebar overlap. Lint also needed explicit exclusions for generated Playwright reports after the first browser run. Application source and test code remain covered by lint.
+
+The demo suite reports no unexpected console errors, page errors, failed requests, or HTTP errors. Its cancellation test explicitly checks one expected aborted request. An independent static recheck found no remaining concrete issues. Successful live-provider generation, Firefox, Safari, real touch-device selection, OCR, and citation or equation previews remain unverified or outside this prototype.

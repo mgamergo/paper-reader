@@ -14,7 +14,7 @@ The provider module alone imports the Vercel AI SDK and reads server credentials
 
 ## Synthesis decision
 
-Two independent sketches converged on a feature-oriented client session with narrow import and assistance routes. This replaces a server document store and processing jobs, whose lifecycle would add complexity without improving the prototype. Both sketches contributed cancellation and generation checks, bounded arXiv downloads, schema validation, editable metadata, and local glossary persistence. No cross-judge ran because the configured pool shares one model family.
+Two independent sketches converged on a feature-oriented client session with narrow import and assistance routes. This replaces a server document store and processing jobs, whose lifecycle would add complexity without improving the prototype. Both sketches contributed cancellation and generation checks, bounded arXiv downloads, schema validation, editable metadata, and local glossary persistence. A subsequent independent review by gpt-6-astra approved the consensus and required exact quote preservation, inspectable context, generation checks, and honest unsupported demo responses.
 
 ## Visual direction
 
