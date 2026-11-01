@@ -8,6 +8,9 @@
         "@ai-sdk/anthropic": "^4.0.94",
         "@ai-sdk/google": "^4.0.109",
         "@ai-sdk/openai": "^4.0.106",
+        "@fontsource/noto-sans-devanagari": "^5.3.0",
+        "@fontsource/noto-sans-tamil": "^5.3.0",
+        "@fontsource/noto-sans-telugu": "^5.3.0",
         "@radix-ui/react-dialog": "^1.3.1",
         "@radix-ui/react-popover": "^1.3.1",
         "@radix-ui/react-slider": "^1.6.1",
@@ -117,6 +120,12 @@
     "@floating-ui/react-dom": ["@floating-ui/react-dom@2.1.9", "", { "dependencies": { "@floating-ui/dom": "^1.8.0" }, "peerDependencies": { "react": ">=16.8.0", "react-dom": ">=16.8.0" } }, "sha512-JDjEFGCpImxDCA7JJKviA0M9+RtmJdj0m/NVU5IMgBK+AmZouAQQ7/+2GLH0GXXY0YMw9oXPB8hKdbPYg5QLYg=="],
 
     "@floating-ui/utils": ["@floating-ui/utils@0.2.12", "", {}, "sha512-HpCo8tmWzLVad5s2d19EhAz5zqrrQ6s69qd6moPMQvkOuSwDT1YgRfWSVuc4ennqrgv3OHppiOGMQ7oC13yIww=="],
+
+    "@fontsource/noto-sans-devanagari": ["@fontsource/noto-sans-devanagari@5.3.0", "", {}, "sha512-7khYmipS/5KAUUmrO1DKir8yL8XI00d0+ZE9BqbS8XF1jzObv6CpPOk3UeYxF+Pvi8bx9bBvprBCOcbx/eQWTQ=="],
+
+    "@fontsource/noto-sans-tamil": ["@fontsource/noto-sans-tamil@5.3.0", "", {}, "sha512-webid7fyBljiIEJ1hXuey48vCUe2Oq3/EwYjo6XBtXItO9FoUmqy0bEnXA5iE++iC324BTI8QMy80SYtDheCzA=="],
+
+    "@fontsource/noto-sans-telugu": ["@fontsource/noto-sans-telugu@5.3.0", "", {}, "sha512-D5AD91Ok2wURk6Vf4sOe2KA3nf0M7qePboNVuvJbguOqLAplh3cGkEIX1qi9u1Jjcz9QWblQ5BbTXI/c+QjB9Q=="],
 
     "@humanfs/core": ["@humanfs/core@0.19.2", "", { "dependencies": { "@humanfs/types": "^0.15.0" } }, "sha512-UhXNm+CFMWcbChXywFwkmhqjs3PRCmcSa/hfBgLIb7oQ5HNb1wS0icWsGtSAUNgefHeI+eBrA8I1fxmbHsGdvA=="],
 

@@ -264,9 +264,7 @@ export function demoAssistance(request: AssistanceRequest): AssistanceResult {
     kind === "explain" ? selection.quote : selection.paragraph,
   );
   const concept = found[0];
-  const attentionPaper =
-    /attention is all you need/i.test(request.paper.title) ||
-    /transformer|attention mechanism/i.test(selection.paragraph);
+  const attentionPaper = /attention is all you need/i.test(request.paper.title);
   const curated = attentionPaper && concept;
   let english = curated
     ? concept.definition
