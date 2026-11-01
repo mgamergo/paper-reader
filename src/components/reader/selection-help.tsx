@@ -53,7 +53,11 @@ export function SelectionHelp({
               <span className="fine-print">
                 Selected on page {selection.page}
               </span>
-              <h3>{selection.quote}</h3>
+              <h3>
+                {selection.quote.length > 120
+                  ? "Selected paragraph"
+                  : selection.quote}
+              </h3>
             </div>
             <Button
               variant="ghost"
@@ -120,28 +124,31 @@ export function SelectionHelp({
               help.
             </p>
           </details>
-          <div className="difficulty">
-            <div className="difficulty-label">
-              <label>Reading level</label>
-              <span>{reader.difficulty}</span>
+          <details className="reading-options">
+            <summary>Simplification level: {reader.difficulty}</summary>
+            <div className="difficulty">
+              <div className="difficulty-label">
+                <label>Reading level</label>
+                <span>{reader.difficulty}</span>
+              </div>
+              <Slider
+                valueLabel={reader.difficulty}
+                min={0}
+                max={2}
+                step={1}
+                value={[levels.indexOf(reader.difficulty)]}
+                onValueChange={([value]) => {
+                  const level = levels[value];
+                  if (level) reader.changeDifficulty(level);
+                }}
+              />
+              <div className="slider-labels">
+                <span>Easy</span>
+                <span>Intermediate</span>
+                <span>Technical</span>
+              </div>
             </div>
-            <Slider
-              valueLabel={reader.difficulty}
-              min={0}
-              max={2}
-              step={1}
-              value={[levels.indexOf(reader.difficulty)]}
-              onValueChange={([value]) => {
-                const level = levels[value];
-                if (level) reader.changeDifficulty(level);
-              }}
-            />
-            <div className="slider-labels">
-              <span>Easy</span>
-              <span>Intermediate</span>
-              <span>Technical</span>
-            </div>
-          </div>
+          </details>
           {assistance.kind === "loading" && (
             <p role="status" className="loading-inline">
               <LoaderCircle className="spin" size={16} />
@@ -165,12 +172,12 @@ export function SelectionHelp({
               </div>
               {assistance.data.request.kind === "simplify" ? (
                 <>
-                  <div className="rewrite-section">
-                    <h4>Original paragraph</h4>
+                  <details className="rewrite-section">
+                    <summary>Original paragraph</summary>
                     <p className="original-paragraph">
                       {assistance.data.request.selection.paragraph}
                     </p>
-                  </div>
+                  </details>
                   <div className="rewrite-section">
                     <h4>Simplified · {assistance.data.request.difficulty}</h4>
                     <p className="simplified-paragraph">
@@ -182,7 +189,9 @@ export function SelectionHelp({
                   </div>
                 </>
               ) : (
-                <div className="bilingual-result">
+                <div
+                  className={`bilingual-result${assistance.data.result.native ? "" : " english-only"}`}
+                >
                   <section>
                     <h4>In English</h4>
                     <p>{assistance.data.result.english}</p>

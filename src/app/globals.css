@@ -256,6 +256,7 @@ summary {
   font-weight: 500;
 }
 .current-paper {
+  flex-shrink: 0;
   display: flex;
   text-align: left;
   align-items: start;
@@ -294,6 +295,7 @@ summary {
   margin: 31px 10px 12px;
 }
 .page-outline {
+  flex: 1;
   overflow: auto;
   min-height: 0;
   display: flex;
@@ -301,6 +303,7 @@ summary {
   gap: 3px;
 }
 .page-outline button {
+  flex-shrink: 0;
   font-size: 12px;
   display: flex;
   align-items: center;
@@ -323,6 +326,7 @@ summary {
   background: var(--primary);
 }
 .sidebar-footer {
+  flex-shrink: 0;
   margin-top: auto;
   padding: 32px 10px 0;
   display: flex;
@@ -891,6 +895,11 @@ summary {
   border-top: 1px solid var(--line);
   padding-top: 14px;
 }
+.reading-options {
+  margin-top: 16px;
+  font-size: 11px;
+  color: var(--slate);
+}
 .difficulty-label {
   display: flex;
   justify-content: space-between;
@@ -943,6 +952,9 @@ summary {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 20px;
+}
+.bilingual-result.english-only {
+  grid-template-columns: 1fr;
 }
 .bilingual-result section + section {
   border-left: 1px solid var(--line);
