@@ -31,6 +31,8 @@ const test = base.extend<{ browserLog: ReturnType<typeof observeBrowser> }>({
   ],
 });
 
+test.use({ colorScheme: "dark" });
+
 let attentionPdf: Buffer;
 test.beforeAll(async ({ request }) => {
   await mkdir(evidence, { recursive: true });
@@ -117,6 +119,11 @@ test("real arXiv selections, bilingual help, simplification, PDF and persisted f
     .getByRole("button", { name: "Read Attention Is All You Need" })
     .click();
   await expect(abstract(page)).toBeVisible();
+  await expect(page.locator(".document-sheet")).toHaveCSS(
+    "background-color",
+    "rgb(36, 40, 35)",
+  );
+  await page.screenshot({ path: path.join(evidence, "dark-reader.png") });
   await expect(
     page.getByRole("combobox", { name: "Page", exact: true }).locator("option"),
   ).toHaveCount(15);
@@ -154,7 +161,7 @@ test("real arXiv selections, bilingual help, simplification, PDF and persisted f
   await expect(help(page)).toContainText(
     "Converting an input sequence into an output sequence",
   );
-  await page.screenshot({ path: path.join(evidence, "explanation.png") });
+  await page.screenshot({ path: path.join(evidence, "dark-explanation.png") });
   await closeHelp(page);
   await page
     .getByRole("combobox", { name: "Native language" })
@@ -165,7 +172,7 @@ test("real arXiv selections, bilingual help, simplification, PDF and persisted f
     "इनपुट अनुक्रम",
   );
   await expect(help(page)).toContainText("In English");
-  await page.screenshot({ path: path.join(evidence, "hindi.png") });
+  await page.screenshot({ path: path.join(evidence, "dark-hindi.png") });
   await closeHelp(page);
   await selectWord(page, abstract(page), "attention");
   await explain(page);
@@ -179,7 +186,7 @@ test("real arXiv selections, bilingual help, simplification, PDF and persisted f
     "attention mechanism",
   );
   await page.evaluate(() => window.scrollTo(0, 0));
-  await page.screenshot({ path: path.join(evidence, "glossary.png") });
+  await page.screenshot({ path: path.join(evidence, "dark-glossary.png") });
   const outline = page.getByRole("navigation", { name: "Paper pages" });
   await outline
     .getByRole("button", { name: "Page 15", exact: true })
@@ -226,7 +233,7 @@ test("real arXiv selections, bilingual help, simplification, PDF and persisted f
     .click();
   await expect(page.locator(".simplified-paragraph")).not.toHaveText(original);
   await page.locator(".simplified-paragraph").scrollIntoViewIfNeeded();
-  await page.screenshot({ path: path.join(evidence, "simplified.png") });
+  await page.screenshot({ path: path.join(evidence, "dark-simplified.png") });
   const definitionButton = help(page)
     .getByRole("button", { name: /^Define attention$/i })
     .first();
@@ -239,7 +246,7 @@ test("real arXiv selections, bilingual help, simplification, PDF and persisted f
       )
       .last(),
   ).toBeVisible();
-  await page.screenshot({ path: path.join(evidence, "definition.png") });
+  await page.screenshot({ path: path.join(evidence, "dark-definition.png") });
   await page.keyboard.press("Escape");
   await closeHelp(page);
   await page
@@ -255,6 +262,15 @@ test("real arXiv selections, bilingual help, simplification, PDF and persisted f
     "width",
     /^[1-9]\d*$/,
   );
+  await expect(page.locator(".pdf-color-note")).toContainText(
+    "Original PDF colors are preserved",
+  );
+  await expect(page.locator(".pdf-page-canvas canvas")).toHaveCSS(
+    "background-color",
+    "rgb(255, 255, 255)",
+  );
+  await expect(pdfText).toHaveCSS("color", "rgba(0, 0, 0, 0)");
+  await page.screenshot({ path: path.join(evidence, "dark-pdf.png") });
   await selectWord(page, pdfText, "attention");
   await help(page)
     .getByText("Inspect or correct context", { exact: true })
@@ -276,6 +292,11 @@ test("real arXiv selections, bilingual help, simplification, PDF and persisted f
   await expect(page.getByTestId("flashcard-answer")).toContainText(
     "gives different weights",
   );
+  await expect(page.locator(".dialog-content")).toHaveCSS(
+    "background-color",
+    "rgb(32, 35, 32)",
+  );
+  await page.screenshot({ path: path.join(evidence, "dark-flashcards.png") });
   await page.getByRole("button", { name: "Next card" }).click();
   await expect(page.getByTestId("flashcard-answer")).toHaveCount(0);
   await expect(page.getByText("Card 2 of 3", { exact: true })).toBeVisible();
@@ -329,7 +350,7 @@ test("upload, all native languages, metadata, tablet and mobile controls", async
   await expect(
     page.getByRole("complementary", { name: "Saved glossary" }),
   ).toBeVisible();
-  await page.screenshot({ path: path.join(evidence, "tablet.png") });
+  await page.screenshot({ path: path.join(evidence, "dark-tablet.png") });
   await page.getByRole("button", { name: "Close glossary" }).click();
   await page.setViewportSize({ width: 390, height: 844 });
   await page.evaluate(() => window.scrollTo(0, 0));
@@ -360,7 +381,7 @@ test("upload, all native languages, metadata, tablet and mobile controls", async
     bounds && bounds.x >= 0 && bounds.x + bounds.width <= 390,
   ).toBeTruthy();
   await noOverflow(page);
-  await page.screenshot({ path: path.join(evidence, "mobile.png") });
+  await page.screenshot({ path: path.join(evidence, "dark-mobile.png") });
   await closeHelp(page);
   await page
     .getByRole("button", { name: "Show glossary", exact: true })
