@@ -12,7 +12,6 @@ function resolveTheme(preference: Preference, systemDark: boolean): Theme {
   return preference ?? (systemDark ? "dark" : "light");
 }
 
-// The bootstrap shares the runtime rules and has no dependency on downloaded JS.
 export const themeBootstrap = `(()=>{const parse=${parsePreference.toString()};const resolve=${resolveTheme.toString()};let preference=null;try{preference=parse(localStorage.getItem(${JSON.stringify(storageKey)}))}catch{}document.documentElement.dataset.theme=resolve(preference,matchMedia(${JSON.stringify(systemQuery)}).matches)})()`;
 
 let preference: Preference = null;
@@ -73,8 +72,6 @@ export function toggleTheme() {
   preference = theme === "dark" ? "light" : "dark";
   try {
     localStorage.setItem(storageKey, preference);
-  } catch {
-    // A blocked storage write must not prevent this session's choice.
-  }
+  } catch {}
   applyTheme();
 }

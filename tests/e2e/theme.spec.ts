@@ -189,11 +189,35 @@ test("dark home and upload dialog remain usable at desktop, tablet, and mobile w
     "rgb(32, 35, 32)",
   );
   await expect(page.getByLabel("Choose a local PDF")).toBeVisible();
+  const borderContrast = await page
+    .getByRole("textbox")
+    .first()
+    .evaluate((input) => {
+      const style = getComputedStyle(input);
+      function luminance(color: string) {
+        const channels = color.match(/\d+/g)?.slice(0, 3).map(Number);
+        if (!channels || channels.length !== 3)
+          throw new Error(`Unsupported color: ${color}`);
+        const linear = channels.map((channel) => {
+          const value = channel / 255;
+          return value <= 0.04045
+            ? value / 12.92
+            : ((value + 0.055) / 1.055) ** 2.4;
+        });
+        return linear[0] * 0.2126 + linear[1] * 0.7152 + linear[2] * 0.0722;
+      }
+      return (
+        (luminance(style.borderTopColor) + 0.05) /
+        (luminance(style.backgroundColor) + 0.05)
+      );
+    });
+  expect(borderContrast).toBeGreaterThanOrEqual(3);
   await page.screenshot({ path: "artifacts/dark-upload.png" });
   await page.getByRole("button", { name: "Close dialog" }).click();
   for (const [width, height, name] of [
     [768, 1024, "tablet"],
     [390, 844, "mobile"],
+    [320, 740, "narrow"],
   ] as const) {
     await page.setViewportSize({ width, height });
     await expect(toggle(page)).toBeVisible();
@@ -202,8 +226,13 @@ test("dark home and upload dialog remain usable at desktop, tablet, and mobile w
         () => document.documentElement.scrollWidth <= innerWidth,
       ),
     ).toBe(true);
+    expect(
+      await page
+        .locator(".empty-paper h1")
+        .evaluate((heading) => heading.scrollWidth <= heading.clientWidth),
+    ).toBe(true);
     const header = await page.locator(".app-header").boundingBox();
-    expect(header?.height).toBe(width === 390 ? 72 : 76);
+    expect(header?.height).toBe(width <= 700 ? 72 : 76);
     await page
       .getByRole("button", { name: "Show glossary", exact: true })
       .click();

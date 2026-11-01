@@ -34,6 +34,8 @@ bun run start --hostname 127.0.0.1
 
 Metadata comes from the PDF title and first-page extracted abstract. Use **Edit metadata** to correct it, especially for local uploads. Metadata is sent with the selected term and paragraph for assistance. The library and page outline describe the current in-memory document. This prototype does not store a PDF library across reloads.
 
+Use the sun or moon button in the header to switch reading themes. Margin follows your system preference until you choose a theme, then remembers your choice in this browser. Text view, explanations, and glossary support dark reading. Original PDF pages retain their colors.
+
 ## Optional live assistance
 
 Without credentials, the interface clearly shows **Demo mode**. No API key is required to try the reading and glossary flows. `.env.example` documents the names. Supply keys through your own server environment. Real secret files are not part of this repository.
@@ -82,9 +84,9 @@ bun run build
 bun run test:e2e
 ```
 
-The four E2E tests import the real arXiv paper, select words with the mouse in text and PDF views, assert the request includes surrounding text and metadata, exercise every native language, change simplification levels and open definitions, verify glossary persistence and flashcards, recover damaged storage, and reject invalid API requests. A delayed-response test proves that changing language cancels obsolete help without saving it.
+The E2E tests import the real arXiv paper, select words with the mouse in text and PDF views, assert the request includes surrounding text and metadata, exercise every native language, change simplification levels and open definitions, verify glossary persistence and flashcards, recover damaged storage, and reject invalid API requests. A delayed-response test proves that changing language cancels obsolete help without saving it. Theme coverage checks system changes, saved preferences, blocked storage, cross-tab synchronization, and the initial appearance before hydration.
 
-Diagnostics attach before navigation and record console errors, uncaught page errors, failed requests, and HTTP 4xx/5xx responses. The cancellation test explicitly expects one aborted assistance request; it records that cancellation separately. All other browser error categories must remain empty. Screenshots go to `artifacts/`; traces and the HTML report go to `test-results/` and `playwright-report/`. Viewport checks cover 1440×900, 768×1024, and 390×844. Chromium viewport checks do not establish Safari, Firefox, or real-device support. Successful live-provider generation requires your credentials and is not covered by the demo suite.
+Diagnostics attach before navigation and record console errors, uncaught page errors, failed requests, and HTTP 4xx/5xx responses. The cancellation test explicitly expects one aborted assistance request; it records that cancellation separately. All other browser error categories must remain empty. Screenshots go to `artifacts/`; traces and the HTML report go to `test-results/` and `playwright-report/`. Viewport checks cover 1440×900, 768×1024, 390×844, and the header controls at 320×740. Chromium viewport checks do not establish Safari, Firefox, or real-device support. Successful live-provider generation requires your credentials and is not covered by the demo suite.
 
 Useful locators for verification:
 
