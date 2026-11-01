@@ -1,0 +1,6 @@
+.next
+node_modules
+bun.lock
+public/pdf.worker.min.mjs
+playwright-report
+test-results
